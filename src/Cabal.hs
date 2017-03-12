@@ -4,6 +4,8 @@ module Cabal
   , findCabalFile
   ) where
 
+#ifdef ENABLE_CABAL
+
 import Stack
 import Control.Exception (IOException, catch)
 import Control.Monad (when)
@@ -273,3 +275,14 @@ findCabalFile dir = do
     isCabalFile :: FilePath -> Bool
     isCabalFile path = ".cabal" `isSuffixOf` path
                     && length path > length ".cabal"
+
+#else
+import Stack
+
+getPackageGhcOpts :: FilePath -> Maybe StackConfig -> [String] -> IO (Either String [String])
+getPackageGhcOpts _ _ _ = return $ Right []
+
+findCabalFile :: FilePath -> IO (Maybe FilePath)
+findCabalFile _ = return Nothing
+
+#endif
